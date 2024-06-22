@@ -12,27 +12,17 @@ const app = new Hono();
 app.use("/*", serveStatic({ root: "./dist", index: "" }));
 
 app.get("/*", (c) => {
-  const { pipe } = ReactDOMServer.renderToPipeableStream(
-    <Layout>
-      <App />
-    </Layout>,
-    {
-      onShellReady() {
-        c.status = 200;
-        c.header("Content-type", "text/html");
-        pipe(c.env.outgoing);
-      },
-      onShellError() {
-        c.status = 500;
-        c.body("<!doctype html><p>Loading...</p>");
-      },
-    },
-  );
-  return RESPONSE_ALREADY_SENT;
+	const { pipe } = ReactDOMServer.renderToPipeableStream(
+		<Layout>
+			<App />
+		</Layout>,
+	);
+	pipe(c.env.outgoing);
+	return RESPONSE_ALREADY_SENT;
 });
 
 serve({ fetch: app.fetch, port: 3002 }, (info) => {
-  console.log(`Listening on ${info.address}:${info.port}`);
+	console.log(`Listening on ${info.address}:${info.port}`);
 });
 
 export default app;
